@@ -10,6 +10,7 @@ from .serializers import StockSerializer, WatchlistSerializer
 
 class StockListView(generics.ListAPIView):
     serializer_class = StockSerializer
+    pagination_class = None  # return full list, no pagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ["ticker", "name", "sector"]
     ordering_fields = ["ticker", "price", "change_percent", "market_cap"]
