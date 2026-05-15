@@ -116,6 +116,8 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", default="http://localhost:3000").split(",")
 CORS_ALLOW_CREDENTIALS = True
 
-# ── Email (console for development) ──
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# ── Email (Resend) ──
+RESEND_API_KEY = config("RESEND_API_KEY", default="")
+EMAIL_FROM = config("EMAIL_FROM", default="noreply@freshfieldsinc.com")
+FRONTEND_URL = config("FRONTEND_URL", default="http://localhost:3000")
 
