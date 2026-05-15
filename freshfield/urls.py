@@ -25,4 +25,5 @@ urlpatterns = [
     path("api/stocks/", include("stocks.urls")),
     path("api/wallet/", include("wallet.urls")),
     path("api/orders/", include("orders.urls")),
+    path("api/admin/", include("admin_api.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

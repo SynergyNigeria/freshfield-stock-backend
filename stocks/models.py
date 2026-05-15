@@ -22,6 +22,9 @@ class Stock(models.Model):
     def __str__(self):
         return self.ticker
 
+    class Meta:
+        ordering = ["ticker"]
+
     @property
     def logo(self):
         return f"https://financialmodelingprep.com/image-stock/{self.ticker}.png"

@@ -23,6 +23,7 @@ class WalletView(generics.RetrieveAPIView):
 class TransactionListView(generics.ListAPIView):
     serializer_class = TransactionSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = None
 
     def get_queryset(self):
         return Transaction.objects.filter(user=self.request.user)
@@ -47,6 +48,7 @@ class DepositRequestCreateView(generics.CreateAPIView):
 class DepositRequestListView(generics.ListAPIView):
     serializer_class = DepositRequestSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = None
 
     def get_queryset(self):
         return DepositRequest.objects.filter(user=self.request.user)
@@ -75,6 +77,7 @@ class WithdrawalRequestCreateView(generics.CreateAPIView):
 class WithdrawalRequestListView(generics.ListAPIView):
     serializer_class = WithdrawalRequestSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = None
 
     def get_queryset(self):
         return WithdrawalRequest.objects.filter(user=self.request.user)

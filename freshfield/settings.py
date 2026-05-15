@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     "stocks",
     "wallet",
     "orders",
+    "admin_api",
 ]
 
 MIDDLEWARE = [
