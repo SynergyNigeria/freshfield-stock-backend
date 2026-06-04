@@ -53,25 +53,25 @@ class Command(BaseCommand):
             self.stdout.write("No public tickers to update.")
             return
 
-        symbols = ",".join(public_tickers)
-        url = f"https://financialmodelingprep.com/api/v3/quote/{symbols}?apikey={api_key}"
-
-        try:
-            with urllib.request.urlopen(url, timeout=15) as resp:
-                data = json.loads(resp.read().decode())
-        except Exception as exc:
-            self.stderr.write(f"FMP request failed: {exc}")
-            return
-
-        if not isinstance(data, list):
-            self.stderr.write(f"Unexpected FMP response: {data}")
-            return
-
         updated = 0
-        for item in data:
-            ticker = item.get("symbol")
-            if not ticker:
+        for ticker in public_tickers:
+            url = f"https://financialmodelingprep.com/stable/quote?symbol={ticker}&apikey={api_key}"
+            try:
+                req = urllib.request.Request(
+                    url,
+                    headers={"User-Agent": "Mozilla/5.0 (compatible; FreshfieldStocks/1.0)"},
+                )
+                with urllib.request.urlopen(req, timeout=15) as resp:
+                    data = json.loads(resp.read().decode())
+            except Exception as exc:
+                self.stderr.write(f"FMP request failed for {ticker}: {exc}")
                 continue
+
+            if not isinstance(data, list) or not data:
+                self.stderr.write(f"No data for {ticker}: {data}")
+                continue
+
+            item = data[0]
             try:
                 stock = Stock.objects.get(ticker=ticker)
             except Stock.DoesNotExist:
@@ -79,7 +79,7 @@ class Command(BaseCommand):
 
             stock.price = _fmt(item.get("price", stock.price))
             stock.change = _fmt(item.get("change", stock.change))
-            stock.change_percent = _fmt(item.get("changesPercentage", stock.change_percent))
+            stock.change_percent = _fmt(item.get("changePercentage", stock.change_percent))
             stock.volume = str(item.get("volume") or stock.volume)
             stock.market_cap = str(item.get("marketCap") or stock.market_cap)
             stock.high_52w = _fmt(item.get("yearHigh", stock.high_52w))
