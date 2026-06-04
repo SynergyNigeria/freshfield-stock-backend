@@ -171,5 +171,6 @@ class AdminUpdateUserView(APIView):
                 setattr(user, field, request.data[field])
         user.save()
         from .serializers import AdminUserDetailSerializer
-        return Response(AdminUserDetailSerializer(user).data)
+        user_full = User.objects.prefetch_related("holdings__stock", "transactions", "wallet").get(pk=pk)
+        return Response(AdminUserDetailSerializer(user_full).data)
 

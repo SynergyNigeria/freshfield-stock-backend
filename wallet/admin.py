@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Wallet, Transaction, DepositRequest, WithdrawalRequest
+from .models import Wallet, Transaction, DepositRequest, WithdrawalRequest, TransferMethod
 
 @admin.register(Wallet)
 class WalletAdmin(admin.ModelAdmin):
@@ -38,3 +38,10 @@ class WithdrawalRequestAdmin(admin.ModelAdmin):
     list_display = ("user", "amount", "status", "created_at")
     list_filter = ("status",)
     search_fields = ("user__email",)
+
+
+@admin.register(TransferMethod)
+class TransferMethodAdmin(admin.ModelAdmin):
+    list_display = ("display_name", "method_type", "account_identifier", "is_active", "order")
+    list_filter = ("method_type", "is_active")
+    list_editable = ("is_active", "order")

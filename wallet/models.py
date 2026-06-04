@@ -40,6 +40,31 @@ class Transaction(models.Model):
         return f"{self.user.email} — {self.type} ${self.amount}"
 
 
+class TransferMethod(models.Model):
+    METHOD_CHOICES = [
+        ("bank_transfer", "Bank Transfer"),
+        ("paypal", "PayPal"),
+        ("zelle", "Zelle"),
+    ]
+
+    method_type = models.CharField(max_length=20, choices=METHOD_CHOICES)
+    display_name = models.CharField(max_length=100)
+    account_name = models.CharField(max_length=150)
+    account_identifier = models.CharField(max_length=150, help_text="Account number, email, or phone")
+    bank_name = models.CharField(max_length=100, blank=True)
+    routing_number = models.CharField(max_length=50, blank=True)
+    reference = models.CharField(max_length=100, blank=True)
+    instructions = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return f"{self.display_name} ({self.get_method_type_display()})"
+
+
 class DepositRequest(models.Model):
     STATUS_CHOICES = [
         ("pending", "Pending"),
@@ -50,6 +75,10 @@ class DepositRequest(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="deposit_requests")
     amount = models.DecimalField(max_digits=14, decimal_places=2)
     proof_image = models.ImageField(upload_to="deposit_proofs/")
+    transfer_method = models.ForeignKey(
+        TransferMethod, null=True, blank=True,
+        on_delete=models.SET_NULL, related_name="deposit_requests"
+    )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     admin_note = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

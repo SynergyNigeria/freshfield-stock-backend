@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Wallet, Transaction, DepositRequest, WithdrawalRequest
+from .models import Wallet, Transaction, DepositRequest, WithdrawalRequest, TransferMethod
 
 
 class WalletSerializer(serializers.ModelSerializer):
@@ -14,10 +14,29 @@ class TransactionSerializer(serializers.ModelSerializer):
         fields = ("id", "type", "amount", "status", "description", "created_at")
 
 
+class TransferMethodSerializer(serializers.ModelSerializer):
+    method_type_display = serializers.CharField(source="get_method_type_display", read_only=True)
+
+    class Meta:
+        model = TransferMethod
+        fields = (
+            "id", "method_type", "method_type_display", "display_name",
+            "account_name", "account_identifier", "bank_name",
+            "routing_number", "reference", "instructions", "is_active", "order",
+        )
+
+
 class DepositRequestSerializer(serializers.ModelSerializer):
+    transfer_method_id = serializers.PrimaryKeyRelatedField(
+        queryset=TransferMethod.objects.filter(is_active=True),
+        source="transfer_method",
+        required=False,
+        allow_null=True,
+    )
+
     class Meta:
         model = DepositRequest
-        fields = ("id", "amount", "proof_image", "status", "admin_note", "created_at")
+        fields = ("id", "amount", "proof_image", "transfer_method_id", "status", "admin_note", "created_at")
         read_only_fields = ("status", "admin_note", "created_at")
 
     def validate_amount(self, value):

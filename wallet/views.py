@@ -1,13 +1,14 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.views import APIView
 from django.db import transaction as db_transaction
 
-from .models import Wallet, Transaction, DepositRequest, WithdrawalRequest
+from .models import Wallet, Transaction, DepositRequest, WithdrawalRequest, TransferMethod
 from .serializers import (
     WalletSerializer, TransactionSerializer,
     DepositRequestSerializer, WithdrawalRequestSerializer,
+    TransferMethodSerializer,
 )
 
 
@@ -82,3 +83,29 @@ class WithdrawalRequestListView(generics.ListAPIView):
     def get_queryset(self):
         return WithdrawalRequest.objects.filter(user=self.request.user)
 
+
+# ── Transfer Methods (public read) ─────────────────────────────────────────
+class TransferMethodListView(generics.ListAPIView):
+    """GET /api/wallet/transfer-methods/ — list active methods for deposit UI"""
+    serializer_class = TransferMethodSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = None
+
+    def get_queryset(self):
+        return TransferMethod.objects.filter(is_active=True)
+
+
+# ── Transfer Methods (admin CRUD) ──────────────────────────────────────────
+class AdminTransferMethodListCreateView(generics.ListCreateAPIView):
+    """GET/POST /api/wallet/admin/transfer-methods/"""
+    serializer_class = TransferMethodSerializer
+    permission_classes = [IsAdminUser]
+    pagination_class = None
+    queryset = TransferMethod.objects.all()
+
+
+class AdminTransferMethodDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """GET/PATCH/DELETE /api/wallet/admin/transfer-methods/{id}/"""
+    serializer_class = TransferMethodSerializer
+    permission_classes = [IsAdminUser]
+    queryset = TransferMethod.objects.all()
