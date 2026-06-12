@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from django.db import transaction as db_transaction
 
 from wallet.models import Transaction as WalletTransaction
+from .emails import send_purchase_receipt_email
 from .models import Order, Holding
 from .serializers import OrderSerializer, HoldingSerializer
 
@@ -44,6 +45,7 @@ class PlaceOrderView(generics.CreateAPIView):
                     status="completed",
                     description=f"Bought {order.shares} shares of {order.stock.ticker}",
                 )
+                db_transaction.on_commit(lambda: send_purchase_receipt_email(order))
 
             elif order.type == "sell":
                 # Credit wallet
