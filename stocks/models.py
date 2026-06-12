@@ -27,6 +27,8 @@ class Stock(models.Model):
 
     @property
     def logo(self):
+        if self.ticker == "SPACEX":
+            return "/spacex.svg"
         return f"https://financialmodelingprep.com/image-stock/{self.ticker}.png"
 
 

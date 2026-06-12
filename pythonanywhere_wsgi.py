@@ -11,6 +11,8 @@ path = '/home/freshfieldstock/freshfield-stock-backend'
 if path not in sys.path:
     sys.path.insert(0, path)
 
+os.chdir(path)  # required so python-decouple can find .env
+
 os.environ['DJANGO_SETTINGS_MODULE'] = 'freshfield.settings'
 
 from django.core.wsgi import get_wsgi_application

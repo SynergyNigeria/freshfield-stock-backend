@@ -2,12 +2,13 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 from django.conf import settings
 import resend
 
-from .serializers import RegisterSerializer, UserSerializer, ChangePasswordSerializer
+from .serializers import RegisterSerializer, UserSerializer, ChangePasswordSerializer, LoginSerializer
 from .models import EmailVerificationToken
 
 User = get_user_model()
@@ -107,6 +108,11 @@ class RegisterView(generics.CreateAPIView):
             {"detail": "Account created. Please check your email to verify your address."},
             status=status.HTTP_201_CREATED,
         )
+
+
+class LoginView(TokenObtainPairView):
+    serializer_class = LoginSerializer
+    permission_classes = [AllowAny]
 
 
 class VerifyEmailView(APIView):

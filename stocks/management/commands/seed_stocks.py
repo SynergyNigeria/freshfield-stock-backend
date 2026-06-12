@@ -111,9 +111,9 @@ SEED_STOCKS = [
     },
     {
         "ticker": "SPACEX", "name": "Space Exploration Technologies Corp.", "sector": "Aerospace & Defense",
-        "price": "135.00", "change": "0.00", "change_percent": "0.00",
+        "price": "161.11", "change": "0.00", "change_percent": "0.00",
         "volume": 0, "market_cap": 350_000_000_000,
-        "high_52w": "135.00", "low_52w": "135.00",
+        "high_52w": "161.11", "low_52w": "135.00",
         "pe": "0.00", "dividend": "0.00",
     },
 ]
