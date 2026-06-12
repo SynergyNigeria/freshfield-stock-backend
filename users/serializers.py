@@ -11,7 +11,7 @@ User = get_user_model()
 class LoginSerializer(serializers.Serializer):
     email = serializers.CharField(required=False, write_only=True)
     login = serializers.CharField(required=False, write_only=True)
-    user_id = serializers.IntegerField(required=False, write_only=True)
+    login_id = serializers.CharField(required=False, write_only=True)
     password = serializers.CharField(write_only=True, trim_whitespace=False)
     access = serializers.CharField(read_only=True)
     refresh = serializers.CharField(read_only=True)
@@ -21,17 +21,17 @@ class LoginSerializer(serializers.Serializer):
     }
 
     def validate(self, attrs):
-        identifier = attrs.get("login") or attrs.get("email") or attrs.get("user_id")
+        identifier = attrs.get("login") or attrs.get("email") or attrs.get("login_id")
         password = attrs.get("password")
 
         if not identifier or not password:
-            raise serializers.ValidationError("Email or ID and password are required.")
+            raise serializers.ValidationError("Email or 8-digit ID and password are required.")
 
         user = None
         identifier = str(identifier).strip()
 
         if identifier.isdigit():
-            user = User.objects.filter(pk=int(identifier)).first()
+            user = User.objects.filter(login_id=identifier).first()
         else:
             user = User.objects.filter(email__iexact=identifier).first()
 
@@ -78,8 +78,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "email", "first_name", "last_name", "full_name", "phone", "country", "email_verified", "date_joined")
-        read_only_fields = ("id", "date_joined", "email_verified")
+        fields = ("id", "login_id", "email", "first_name", "last_name", "full_name", "phone", "country", "email_verified", "date_joined")
+        read_only_fields = ("id", "login_id", "date_joined", "email_verified")
 
 
 class ChangePasswordSerializer(serializers.Serializer):

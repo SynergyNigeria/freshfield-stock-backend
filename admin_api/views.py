@@ -32,6 +32,7 @@ class AdminUserListView(generics.ListAPIView):
             from django.db.models import Q
             qs = qs.filter(
                 Q(email__icontains=search) |
+                Q(login_id__icontains=search) |
                 Q(first_name__icontains=search) |
                 Q(last_name__icontains=search)
             )

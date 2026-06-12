@@ -51,7 +51,7 @@ class AdminUserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            "id", "email", "first_name", "last_name", "country", "phone",
+            "id", "login_id", "email", "first_name", "last_name", "country", "phone",
             "email_verified", "is_active", "date_joined",
             "wallet_balance", "portfolio_value", "holdings_count",
         )

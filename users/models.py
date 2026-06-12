@@ -1,6 +1,15 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+import random
 import uuid
+
+
+def generate_login_id():
+    rng = random.SystemRandom()
+    while True:
+        login_id = str(rng.randrange(10_000_000, 100_000_000))
+        if not User.objects.filter(login_id=login_id).exists():
+            return login_id
 
 
 class UserManager(BaseUserManager):
@@ -22,6 +31,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    login_id = models.CharField(max_length=8, unique=True, editable=False, blank=True)
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=150, blank=True)
     last_name = models.CharField(max_length=150, blank=True)
@@ -36,6 +46,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = []
 
     objects = UserManager()
+
+    def save(self, *args, **kwargs):
+        if not self.login_id:
+            self.login_id = generate_login_id()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.email
